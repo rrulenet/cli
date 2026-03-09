@@ -1,0 +1,8 @@
+Manage rrule.net cloud schedules
+
+USAGE
+  $ rrulenet cloud COMMAND
+
+COMMANDS
+  cloud add   Create a cloud schedule
+  cloud list  List cloud schedules

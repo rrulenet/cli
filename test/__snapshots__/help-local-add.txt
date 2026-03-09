@@ -1,0 +1,16 @@
+Add a local schedule
+
+USAGE
+  $ rrulenet local add RRULE... [--json] [--timezone <value>]
+    [--dtstart <value>] [--name <value>]
+
+ARGUMENTS
+  RRULE...  RRule expression
+
+FLAGS
+  --dtstart=<value>   ISO start datetime
+  --name=<value>      Schedule name
+  --timezone=<value>  [default: UTC] IANA timezone
+
+GLOBAL FLAGS
+  --json  Format output as json.

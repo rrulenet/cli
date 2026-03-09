@@ -1,0 +1,15 @@
+Create a cloud schedule
+
+USAGE
+  $ rrulenet cloud add RRULE --webhook <value> [--json] [--timezone
+    <value>]
+
+ARGUMENTS
+  RRULE  RRule expression
+
+FLAGS
+  --timezone=<value>  [default: UTC] IANA timezone
+  --webhook=<value>   (required) Webhook URL
+
+GLOBAL FLAGS
+  --json  Format output as json.

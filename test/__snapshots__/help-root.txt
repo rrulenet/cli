@@ -1,0 +1,13 @@
+VERSION
+  <VERSION>
+
+USAGE
+  $ rrulenet [COMMAND]
+
+TOPICS
+  cloud   Manage rrule.net cloud schedules
+  config  Manage rrulenet CLI configuration
+  local   Manage local recurring schedules
+
+COMMANDS
+  list  List schedules from local/cloud/all

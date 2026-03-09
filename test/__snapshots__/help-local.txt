@@ -1,0 +1,11 @@
+Manage local recurring schedules
+
+USAGE
+  $ rrulenet local COMMAND
+
+COMMANDS
+  local add     Add a local schedule
+  local list    List local schedules
+  local pause   Pause a local schedule
+  local remove  Remove a local schedule
+  local resume  Resume a local schedule

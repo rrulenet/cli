@@ -1,0 +1,11 @@
+List schedules from local/cloud/all
+
+USAGE
+  $ rrulenet list [--json] [--origin local|cloud|all]
+
+FLAGS
+  --origin=<option>  [default: all] Data source
+                     <options: local|cloud|all>
+
+GLOBAL FLAGS
+  --json  Format output as json.

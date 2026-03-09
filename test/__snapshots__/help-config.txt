@@ -1,0 +1,8 @@
+Manage rrulenet CLI configuration
+
+USAGE
+  $ rrulenet config COMMAND
+
+COMMANDS
+  config get  Get config
+  config set  Set config value
