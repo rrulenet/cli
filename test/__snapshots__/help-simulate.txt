@@ -1,0 +1,21 @@
+Simulate future occurrences for an RRule
+
+USAGE
+  $ rrulenet simulate RRULE [--json] [--dtstart <value>] [--timezone
+    <value>] [--count <value>]
+
+ARGUMENTS
+  RRULE  RRule expression
+
+FLAGS
+  --count=<value>     [default: 10] Number of occurrences to return
+  --dtstart=<value>   Start datetime. Defaults to now.
+  --timezone=<value>  [default: UTC] IANA timezone
+
+GLOBAL FLAGS
+  --json  Format output as json.
+
+EXAMPLES
+  $ rrulenet simulate "FREQ=DAILY;BYHOUR=9;BYMINUTE=0;BYSECOND=0" --count 5
+
+  $ rrulenet simulate "FREQ=WEEKLY;BYDAY=MO,WE,FR;BYHOUR=18;BYMINUTE=30;BYSECOND=0" --dtstart 20260401T120000 --timezone Europe/Paris --count 6 --json

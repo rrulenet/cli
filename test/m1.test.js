@@ -120,6 +120,7 @@ test("help output snapshots stay stable", async () => {
     ["help-cloud.txt", ["cloud", "--help"]],
     ["help-config.txt", ["config", "--help"]],
     ["help-list.txt", ["list", "--help"]],
+    ["help-simulate.txt", ["simulate", "--help"]],
     ["help-local-add.txt", ["local", "add", "--help"]],
     ["help-cloud-add.txt", ["cloud", "add", "--help"]],
   ];
@@ -237,6 +238,63 @@ test("combined list json snapshot stays stable", () => {
   rmSync(dataDir, { recursive: true, force: true });
 });
 
+test("simulate json snapshot stays stable", () => {
+  const result = runCli([
+    "simulate",
+    "FREQ=DAILY;BYHOUR=9;BYMINUTE=0;BYSECOND=0",
+    "--dtstart",
+    "2026-03-01T08:00:00.000Z",
+    "--timezone",
+    "Europe/Paris",
+    "--count",
+    "3",
+    "--json",
+  ]);
+
+  matchSnapshot("simulate.json", `${parseJsonOutput(result)}\n`);
+  rmSync(result.dataDir, { recursive: true, force: true });
+});
+
+test("simulate accepts compact datetime input", () => {
+  const result = runCli([
+    "simulate",
+    "FREQ=DAILY;BYHOUR=12;BYMINUTE=0;BYSECOND=0",
+    "--dtstart",
+    "20260401T120000",
+    "--timezone",
+    "UTC",
+    "--count",
+    "2",
+    "--json",
+  ]);
+
+  const payload = JSON.parse(result.stdout);
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(payload.count, 2);
+  assert.deepEqual(payload.occurrences, [
+    "2026-04-01T12:00:00.000Z",
+    "2026-04-02T12:00:00.000Z",
+  ]);
+  rmSync(result.dataDir, { recursive: true, force: true });
+});
+
+test("simulate defaults dtstart to now", () => {
+  const result = runCli([
+    "simulate",
+    "FREQ=DAILY;COUNT=2",
+    "--count",
+    "2",
+    "--json",
+  ]);
+
+  const payload = JSON.parse(result.stdout);
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(payload.count, 2);
+  assert.equal(Array.isArray(payload.occurrences), true);
+  assert.equal(payload.occurrences.length, 2);
+  rmSync(result.dataDir, { recursive: true, force: true });
+});
+
 test("exit code mapping for basic usage errors stays stable", () => {
   const missingCommand = runCli([
     "local",
@@ -252,6 +310,17 @@ test("exit code mapping for basic usage errors stays stable", () => {
   });
   assert.equal(missingToken.status, 3);
 
+  const invalidCount = runCli([
+    "simulate",
+    "FREQ=DAILY;BYHOUR=9;BYMINUTE=0;BYSECOND=0",
+    "--dtstart",
+    "2026-03-01T08:00:00.000Z",
+    "--count",
+    "0",
+  ]);
+  assert.equal(invalidCount.status, 2);
+
   rmSync(missingCommand.dataDir, { recursive: true, force: true });
   rmSync(missingToken.dataDir, { recursive: true, force: true });
+  rmSync(invalidCount.dataDir, { recursive: true, force: true });
 });

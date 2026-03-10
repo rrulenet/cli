@@ -110,6 +110,40 @@ export function outputList(rows: OutputRow[], jsonMode: boolean): void {
   console.log(table.toString());
 }
 
+export function outputOccurrences(
+  payload: { occurrences: string[]; count: number; timezone?: string },
+  jsonMode: boolean,
+): void {
+  if (jsonMode) {
+    console.log(JSON.stringify(payload, null, 2));
+    return;
+  }
+
+  if (payload.occurrences.length === 0) {
+    console.log(pc.dim("No occurrences found."));
+    return;
+  }
+
+  if (payload.timezone) {
+    console.log(`${pc.cyan("Timezone")}: ${payload.timezone}`);
+  }
+
+  const table = new Table({
+    head: ["#", "Occurrence (UTC)"],
+    style: {
+      head: ["cyan"],
+      border: ["gray"],
+      compact: true,
+    },
+  });
+
+  payload.occurrences.forEach((occurrence, index) => {
+    table.push([String(index + 1), occurrence]);
+  });
+
+  console.log(table.toString());
+}
+
 function colorStatus(status: string): string {
   if (status === "active" || status === "success") return pc.green(status);
   if (status === "paused") return pc.yellow(status);

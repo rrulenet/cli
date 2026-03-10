@@ -10,4 +10,5 @@ TOPICS
   local   Manage local recurring schedules
 
 COMMANDS
-  list  List schedules from local/cloud/all
+  list      List schedules from local/cloud/all
+  simulate  Simulate future occurrences for an RRule
