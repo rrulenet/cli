@@ -9,3 +9,8 @@ FLAGS
 
 GLOBAL FLAGS
   --json  Format output as json.
+
+EXAMPLES
+  $ rrulenet list
+
+  $ rrulenet list --origin cloud --json

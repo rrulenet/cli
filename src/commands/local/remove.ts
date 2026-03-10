@@ -5,6 +5,7 @@ import {CliError} from "../../errors.js";
 
 export default class LocalRemove extends BaseCommand<typeof LocalRemove> {
   static override summary = "Remove a local schedule";
+  static override examples = ["<%= config.bin %> local remove 2f6de5f1-6b29-4f18-88fb-68ac7c4b3e31"];
 
   static override args = {
     id: Args.string({required: true, description: "Schedule id"}),

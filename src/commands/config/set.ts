@@ -5,6 +5,10 @@ import {output} from "../../lib/output.js";
 
 export default class ConfigSet extends BaseCommand<typeof ConfigSet> {
   static override summary = "Set config value";
+  static override examples = [
+    "<%= config.bin %> config set cloud.api_url https://api.rrule.net",
+    "<%= config.bin %> config set local.driver sqlite",
+  ];
 
   static override args = {
     key: Args.string({required: true, description: "Config path (dot notation)"}),

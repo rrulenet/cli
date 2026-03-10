@@ -13,3 +13,8 @@ FLAGS
 
 GLOBAL FLAGS
   --json  Format output as json.
+
+EXAMPLES
+  $ rrulenet cloud add "FREQ=DAILY;BYHOUR=9;BYMINUTE=0;BYSECOND=0" --webhook https://example.com/hook
+
+  $ rrulenet cloud add "FREQ=WEEKLY;BYDAY=MO,FR;BYHOUR=18;BYMINUTE=30;BYSECOND=0" --timezone Europe/Paris --webhook https://example.com/deploy

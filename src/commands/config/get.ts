@@ -5,6 +5,10 @@ import {output} from "../../lib/output.js";
 
 export default class ConfigGet extends BaseCommand<typeof ConfigGet> {
   static override summary = "Get config";
+  static override examples = [
+    "<%= config.bin %> config get",
+    "<%= config.bin %> config get cloud.api_url",
+  ];
 
   static override args = {
     key: Args.string({required: false, description: "Config path (dot notation)"}),

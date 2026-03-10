@@ -3,6 +3,10 @@ import {outputList, toOutputRowFromLocal} from "../../lib/output.js";
 
 export default class LocalList extends BaseCommand<typeof LocalList> {
   static override summary = "List local schedules";
+  static override examples = [
+    "<%= config.bin %> local list",
+    "<%= config.bin %> local list --json",
+  ];
 
   async run(): Promise<void> {
     this.getValidatedConfig();

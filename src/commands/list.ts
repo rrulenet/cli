@@ -5,6 +5,10 @@ import {listCombined} from "../lib/runtime.js";
 
 export default class List extends BaseCommand<typeof List> {
   static override summary = "List schedules from local/cloud/all";
+  static override examples = [
+    "<%= config.bin %> list",
+    "<%= config.bin %> list --origin cloud --json",
+  ];
 
   static override flags = {
     origin: Flags.string({

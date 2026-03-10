@@ -6,6 +6,10 @@ import {startSpinner} from "../../lib/runtime.js";
 
 export default class CloudList extends BaseCommand<typeof CloudList> {
   static override summary = "List cloud schedules";
+  static override examples = [
+    "<%= config.bin %> cloud list",
+    "<%= config.bin %> cloud list --json",
+  ];
 
   async run(): Promise<void> {
     const config = this.getValidatedConfig();
