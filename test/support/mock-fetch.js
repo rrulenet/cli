@@ -9,6 +9,10 @@ globalThis.fetch = async (input, init = {}) => {
     throw new Error(`Unhandled fetch route: ${method} ${url.pathname}`);
   }
 
+  if (route.throw) {
+    throw new Error(route.throw);
+  }
+
   return new Response(JSON.stringify(route.body), {
     status: route.status ?? 200,
     headers: {
