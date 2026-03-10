@@ -10,5 +10,6 @@ TOPICS
   local   Manage local recurring schedules
 
 COMMANDS
+  help      Display help for rrulenet
   list      List schedules from local/cloud/all
   simulate  Simulate future occurrences for an RRule
