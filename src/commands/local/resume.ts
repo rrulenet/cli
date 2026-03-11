@@ -16,8 +16,11 @@ export default class LocalResume extends BaseCommand<typeof LocalResume> {
     const {args} = await this.parse(LocalResume);
     const local = await import("../../local-store.js");
     const db = local.openLocalStore();
-    const ok = local.updateLocalStatus(db, args.id, "active");
+    const resolved = local.resolveLocalScheduleId(db, args.id);
+    if (resolved.ambiguous) throw new CliError(`Ambiguous local schedule id: ${args.id}. Use a longer prefix.`, 2);
+    if (!resolved.id) throw new CliError(`Local schedule not found: ${args.id}`, 2);
+    const ok = local.updateLocalStatus(db, resolved.id, "active");
     if (!ok) throw new CliError(`Local schedule not found: ${args.id}`, 2);
-    output({id: args.id, status: "active"}, this.jsonMode);
+    output({id: resolved.id, status: "active"}, this.jsonMode);
   }
 }

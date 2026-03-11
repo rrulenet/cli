@@ -5,6 +5,7 @@ import type { CloudSchedule } from "../cloud-client.js";
 export interface OutputRow {
   origin: "local" | "cloud";
   id: string;
+  name?: string | null;
   status: string;
   timezone: string;
   rrule: string;
@@ -15,6 +16,7 @@ export interface OutputRow {
 
 export interface LocalScheduleRecord {
   id: string;
+  name?: string | null;
   status: string;
   timezone: string;
   rrule: string;
@@ -27,6 +29,7 @@ export function toOutputRowFromLocal(row: LocalScheduleRecord): OutputRow {
   return {
     origin: "local",
     id: row.id,
+    name: row.name ?? null,
     status: row.status,
     timezone: row.timezone,
     rrule: row.rrule,
@@ -85,6 +88,11 @@ export function outputList(rows: OutputRow[], jsonMode: boolean): void {
     return;
   }
 
+  if (shouldUseCompactListLayout()) {
+    outputListCompact(rows);
+    return;
+  }
+
   const table = new Table({
     head: ["Origin", "Id", "Status", "Timezone", "RRule", "Target", "Next occurrence"],
     style: {
@@ -92,17 +100,17 @@ export function outputList(rows: OutputRow[], jsonMode: boolean): void {
       border: ["gray"],
       compact: true,
     },
-    wordWrap: true,
+    wordWrap: false,
   });
 
   for (const row of rows) {
     table.push([
       row.origin,
-      row.id,
+      formatDisplayId(row.id),
       colorStatus(row.status),
       row.timezone,
-      row.rrule,
-      row.target || "-",
+      truncateCell(row.rrule, 32),
+      truncateCell(row.target || "-", 24),
       formatNextOccurrence(row.next_occurrence, row.status),
     ]);
   }
@@ -155,4 +163,44 @@ function formatNextOccurrence(nextOccurrence: string | null, status: string): st
   if (!nextOccurrence) return "none";
   if (status === "paused") return nextOccurrence;
   return nextOccurrence <= new Date().toISOString() ? `due since ${nextOccurrence}` : nextOccurrence;
+}
+
+function truncateCell(value: string, maxLength: number): string {
+  if (value.length <= maxLength) return value;
+  return `${value.slice(0, maxLength - 3)}...`;
+}
+
+function shouldUseCompactListLayout(): boolean {
+  if (!process.stdout.isTTY) return false;
+  const columns = process.stdout.columns ?? 0;
+  return columns > 0 && columns < 150;
+}
+
+function outputListCompact(rows: OutputRow[]): void {
+  const valueWidth = getCompactValueWidth();
+
+  for (const [index, row] of rows.entries()) {
+    console.log(`${pc.cyan("Origin")}: ${row.origin}`);
+    console.log(`${pc.cyan("Id")}: ${formatDisplayId(row.id)}`);
+    console.log(`${pc.cyan("Status")}: ${row.status}`);
+    console.log(`${pc.cyan("Timezone")}: ${row.timezone}`);
+    console.log(`${pc.cyan("RRule")}: ${truncateCell(row.rrule, valueWidth)}`);
+    console.log(`${pc.cyan("Target")}: ${truncateCell(row.target || "-", valueWidth)}`);
+    console.log(
+      `${pc.cyan("Next occurrence")}: ${truncateCell(formatNextOccurrence(row.next_occurrence, row.status), valueWidth)}`,
+    );
+
+    if (index < rows.length - 1) {
+      console.log("");
+    }
+  }
+}
+
+function getCompactValueWidth(): number {
+  const columns = process.stdout.columns ?? 120;
+  return Math.max(24, columns - 20);
+}
+
+function formatDisplayId(id: string): string {
+  return id.length <= 8 ? id : id.slice(0, 8);
 }

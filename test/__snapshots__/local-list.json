@@ -2,6 +2,7 @@
   {
     "origin": "local",
     "id": "local-1",
+    "name": "Morning sync",
     "status": "active",
     "timezone": "Europe/Paris",
     "rrule": "FREQ=DAILY;BYHOUR=9;BYMINUTE=0;BYSECOND=0",

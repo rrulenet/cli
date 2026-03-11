@@ -184,6 +184,70 @@ test("local add accepts minutely rules with implicit dtstart", () => {
   rmSync(dataDir, { recursive: true, force: true });
 });
 
+test("local commands accept a unique id prefix and reject ambiguous prefixes", () => {
+  const dataDir = makeTempDir();
+
+  const db = new DatabaseSync(join(dataDir, "scheduler.db"));
+  db.exec("PRAGMA journal_mode = WAL;");
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS local_schedules (
+      id TEXT PRIMARY KEY,
+      name TEXT,
+      rrule TEXT NOT NULL,
+      timezone TEXT NOT NULL,
+      dtstart TEXT NOT NULL,
+      command TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'active',
+      next_occurrence TEXT,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
+  `);
+
+  const statement = db.prepare(`
+    INSERT INTO local_schedules (
+      id, name, rrule, timezone, dtstart, command, status, next_occurrence, created_at, updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `);
+  statement.run(
+    "abcdef12-1111-1111-1111-111111111111",
+    "One",
+    "FREQ=DAILY;BYHOUR=9;BYMINUTE=0;BYSECOND=0",
+    "UTC",
+    "2026-04-01T09:00:00.000Z",
+    "echo one",
+    "active",
+    "2026-04-02T09:00:00.000Z",
+    "2026-04-01T09:00:00.000Z",
+    "2026-04-01T09:00:00.000Z",
+  );
+  statement.run(
+    "abcdef34-2222-2222-2222-222222222222",
+    "Two",
+    "FREQ=DAILY;BYHOUR=9;BYMINUTE=0;BYSECOND=0",
+    "UTC",
+    "2026-04-01T09:00:00.000Z",
+    "echo two",
+    "active",
+    "2026-04-02T09:00:00.000Z",
+    "2026-04-01T09:00:00.000Z",
+    "2026-04-01T09:00:00.000Z",
+  );
+  db.close();
+
+  const uniquePrefix = parseJson(runCli(["local", "pause", "abcdef12", "--json"], { dataDir }));
+  assert.deepEqual(uniquePrefix, {
+    id: "abcdef12-1111-1111-1111-111111111111",
+    status: "paused",
+  });
+
+  const ambiguousPrefix = runCli(["local", "remove", "abc", "--json"], { dataDir });
+  assert.equal(ambiguousPrefix.status, 2);
+  assert.match(ambiguousPrefix.stderr, /Ambiguous local schedule id/);
+
+  rmSync(dataDir, { recursive: true, force: true });
+});
+
 test("invalid local inputs and missing resources fail with usage exit codes", () => {
   const dataDir = makeTempDir();
 

@@ -183,6 +183,24 @@ export function removeLocalSchedule(db: DatabaseSync, id: string): boolean {
   return result.changes > 0;
 }
 
+export function resolveLocalScheduleId(db: DatabaseSync, idOrPrefix: string): {
+  id: string | null;
+  ambiguous: boolean;
+} {
+  const exact = db.prepare("SELECT id FROM local_schedules WHERE id = ?").get(idOrPrefix) as { id: string } | undefined;
+  if (exact) {
+    return { id: exact.id, ambiguous: false };
+  }
+
+  const matches = db
+    .prepare("SELECT id FROM local_schedules WHERE id LIKE ? ORDER BY created_at DESC LIMIT 2")
+    .all(`${idOrPrefix}%`) as Array<{ id: string }>;
+
+  if (matches.length === 0) return { id: null, ambiguous: false };
+  if (matches.length > 1) return { id: null, ambiguous: true };
+  return { id: matches[0].id, ambiguous: false };
+}
+
 export function listDueLocalSchedules(db: DatabaseSync, nowIso: string): DueLocalSchedule[] {
   return db
     .prepare(`

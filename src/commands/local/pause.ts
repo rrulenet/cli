@@ -16,8 +16,11 @@ export default class LocalPause extends BaseCommand<typeof LocalPause> {
     const {args} = await this.parse(LocalPause);
     const local = await import("../../local-store.js");
     const db = local.openLocalStore();
-    const ok = local.updateLocalStatus(db, args.id, "paused");
+    const resolved = local.resolveLocalScheduleId(db, args.id);
+    if (resolved.ambiguous) throw new CliError(`Ambiguous local schedule id: ${args.id}. Use a longer prefix.`, 2);
+    if (!resolved.id) throw new CliError(`Local schedule not found: ${args.id}`, 2);
+    const ok = local.updateLocalStatus(db, resolved.id, "paused");
     if (!ok) throw new CliError(`Local schedule not found: ${args.id}`, 2);
-    output({id: args.id, status: "paused"}, this.jsonMode);
+    output({id: resolved.id, status: "paused"}, this.jsonMode);
   }
 }

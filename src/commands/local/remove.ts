@@ -16,8 +16,11 @@ export default class LocalRemove extends BaseCommand<typeof LocalRemove> {
     const {args} = await this.parse(LocalRemove);
     const local = await import("../../local-store.js");
     const db = local.openLocalStore();
-    const ok = local.removeLocalSchedule(db, args.id);
+    const resolved = local.resolveLocalScheduleId(db, args.id);
+    if (resolved.ambiguous) throw new CliError(`Ambiguous local schedule id: ${args.id}. Use a longer prefix.`, 2);
+    if (!resolved.id) throw new CliError(`Local schedule not found: ${args.id}`, 2);
+    const ok = local.removeLocalSchedule(db, resolved.id);
     if (!ok) throw new CliError(`Local schedule not found: ${args.id}`, 2);
-    output({id: args.id, removed: true}, this.jsonMode);
+    output({id: resolved.id, removed: true}, this.jsonMode);
   }
 }
