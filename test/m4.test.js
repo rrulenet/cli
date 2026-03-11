@@ -96,6 +96,75 @@ test("cloud add maps 403 auth failures to exit code 3 and keeps stdout clean in 
   rmSync(result.dataDir, { recursive: true, force: true });
 });
 
+test("cloud pause maps 401 auth failures to exit code 3 and keeps stdout clean in json mode", () => {
+  const result = withMockedFetch(
+    {
+      "POST /v1/schedules/cloud-1/pause": {
+        status: 401,
+        body: { error: "unauthorized" },
+      },
+    },
+    ["cloud", "pause", "cloud-1", "--json"],
+    {
+      env: {
+        RRULENET_API_BASE_URL: "https://api.example.test",
+        RRULENET_TOKEN: "bad-token",
+      },
+    },
+  );
+
+  assert.equal(result.status, 3);
+  assert.equal(result.stdout, "");
+  assert.match(result.stderr, /Cloud pause failed \(401\)/);
+  rmSync(result.dataDir, { recursive: true, force: true });
+});
+
+test("cloud resume maps 403 auth failures to exit code 3 and keeps stdout clean in json mode", () => {
+  const result = withMockedFetch(
+    {
+      "POST /v1/schedules/cloud-1/resume": {
+        status: 403,
+        body: { error: "forbidden" },
+      },
+    },
+    ["cloud", "resume", "cloud-1", "--json"],
+    {
+      env: {
+        RRULENET_API_BASE_URL: "https://api.example.test",
+        RRULENET_TOKEN: "forbidden-token",
+      },
+    },
+  );
+
+  assert.equal(result.status, 3);
+  assert.equal(result.stdout, "");
+  assert.match(result.stderr, /Cloud resume failed \(403\)/);
+  rmSync(result.dataDir, { recursive: true, force: true });
+});
+
+test("cloud remove maps 401 auth failures to exit code 3 and keeps stdout clean in json mode", () => {
+  const result = withMockedFetch(
+    {
+      "DELETE /v1/schedules/cloud-1": {
+        status: 401,
+        body: { error: "unauthorized" },
+      },
+    },
+    ["cloud", "remove", "cloud-1", "--json"],
+    {
+      env: {
+        RRULENET_API_BASE_URL: "https://api.example.test",
+        RRULENET_TOKEN: "bad-token",
+      },
+    },
+  );
+
+  assert.equal(result.status, 3);
+  assert.equal(result.stdout, "");
+  assert.match(result.stderr, /Cloud remove failed \(401\)/);
+  rmSync(result.dataDir, { recursive: true, force: true });
+});
+
 test("cloud network failures map to exit code 4 and keep stdout clean in json mode", () => {
   const result = withMockedFetch(
     {

@@ -4,5 +4,8 @@ USAGE
   $ rrulenet cloud COMMAND
 
 COMMANDS
-  cloud add   Create a cloud schedule
-  cloud list  List cloud schedules
+  cloud add     Create a cloud schedule
+  cloud list    List cloud schedules
+  cloud pause   Pause a cloud schedule
+  cloud remove  Remove a cloud schedule
+  cloud resume  Resume a cloud schedule
