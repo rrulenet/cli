@@ -9,3 +9,4 @@ COMMANDS
   local pause   Pause a local schedule
   local remove  Remove a local schedule
   local resume  Resume a local schedule
+  local run     Run due local schedules
