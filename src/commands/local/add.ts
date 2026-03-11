@@ -2,6 +2,7 @@ import {Args, Flags} from "@oclif/core";
 import {BaseCommand} from "../../base-command.js";
 import {output} from "../../lib/output.js";
 import {CliError} from "../../errors.js";
+import {normalizeDateInput} from "../../rrule-utils.js";
 
 export default class LocalAdd extends BaseCommand<typeof LocalAdd> {
   static override summary = "Add a local schedule";
@@ -17,7 +18,7 @@ export default class LocalAdd extends BaseCommand<typeof LocalAdd> {
 
   static override flags = {
     timezone: Flags.string({default: "UTC", description: "IANA timezone"}),
-    dtstart: Flags.string({description: "ISO start datetime"}),
+    dtstart: Flags.string({description: "Start datetime. Defaults to now."}),
     name: Flags.string({description: "Schedule name"}),
   };
 
@@ -32,11 +33,13 @@ export default class LocalAdd extends BaseCommand<typeof LocalAdd> {
     const command = separatorIdx >= 0 ? raw.slice(separatorIdx + 1).join(" ").trim() : "";
     if (!command) throw new CliError("Missing command after '--' for local add", 2);
 
+    const dtstart = normalizeDateInput(flags.dtstart ?? new Date().toISOString(), flags.timezone);
+
     const schedule = local.addLocalSchedule(db, {
       name: flags.name ?? null,
       rrule: args.rrule,
       timezone: flags.timezone,
-      dtstart: flags.dtstart ?? new Date().toISOString(),
+      dtstart,
       command,
     });
 

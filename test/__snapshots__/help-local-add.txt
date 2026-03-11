@@ -8,7 +8,7 @@ ARGUMENTS
   RRULE...  RRule expression
 
 FLAGS
-  --dtstart=<value>   ISO start datetime
+  --dtstart=<value>   Start datetime. Defaults to now.
   --name=<value>      Schedule name
   --timezone=<value>  [default: UTC] IANA timezone
 

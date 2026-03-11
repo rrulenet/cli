@@ -106,9 +106,8 @@ export function computeOccurrences(
 export function isValidRRule(rruleString: string, dtstartIso: string, timezone: string): boolean {
   try {
     const dtstart = parseISOToZonedDateTime(dtstartIso, timezone);
-    const rule = new RRuleTemporal({ rruleString, dtstart });
-    const probe = rule.between(dtstart, dtstart.add({ years: 20 }), true);
-    return probe.length > 0;
+    const firstProbeDate = new Date(dtstart.epochMilliseconds - 1);
+    return computeNextOccurrence(rruleString, dtstartIso, timezone, firstProbeDate) !== null;
   } catch {
     return false;
   }

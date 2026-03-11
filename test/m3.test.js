@@ -154,6 +154,36 @@ test("restart behavior preserves persisted schedules", () => {
   rmSync(dataDir, { recursive: true, force: true });
 });
 
+test("local add accepts minutely rules with implicit dtstart", () => {
+  const dataDir = makeTempDir();
+
+  const added = parseJson(
+    runCli(
+      [
+        "local",
+        "add",
+        "FREQ=MINUTELY",
+        "--name",
+        "Test minute",
+        "--timezone",
+        "Europe/Paris",
+        "--json",
+        "--",
+        "echo One more minute...",
+      ],
+      { dataDir },
+    ),
+  );
+
+  assert.equal(added.status, "active");
+  assert.equal(added.name, "Test minute");
+  assert.equal(added.rrule, "FREQ=MINUTELY");
+  assert.equal(added.timezone, "Europe/Paris");
+  assert.equal(typeof added.next_occurrence, "string");
+
+  rmSync(dataDir, { recursive: true, force: true });
+});
+
 test("invalid local inputs and missing resources fail with usage exit codes", () => {
   const dataDir = makeTempDir();
 
