@@ -1,0 +1,18 @@
+Convert a cron expression to RRule
+
+USAGE
+  $ rrulenet import cron EXPRESSION [--json] [--timezone <value>]
+
+ARGUMENTS
+  EXPRESSION  Cron expression (5 or 6 fields)
+
+FLAGS
+  --timezone=<value>  [default: UTC] IANA timezone for interpreting cron times
+
+GLOBAL FLAGS
+  --json  Format output as json.
+
+EXAMPLES
+  $ rrulenet import cron "0 9 * * 1" --timezone Europe/Paris
+
+  $ rrulenet import cron "0 0 L * *" --json

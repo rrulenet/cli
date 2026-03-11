@@ -7,6 +7,7 @@ USAGE
 TOPICS
   cloud   Manage rrule.net cloud schedules
   config  Manage rrulenet CLI configuration
+  import  Import schedules from other formats
   local   Manage local recurring schedules
 
 COMMANDS

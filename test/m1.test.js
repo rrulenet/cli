@@ -119,10 +119,12 @@ test("help output snapshots stay stable", async () => {
     ["help-local.txt", ["local", "--help"]],
     ["help-cloud.txt", ["cloud", "--help"]],
     ["help-config.txt", ["config", "--help"]],
+    ["help-import.txt", ["import", "--help"]],
     ["help-list.txt", ["list", "--help"]],
     ["help-simulate.txt", ["simulate", "--help"]],
     ["help-local-add.txt", ["local", "add", "--help"]],
     ["help-cloud-add.txt", ["cloud", "add", "--help"]],
+    ["help-import-cron.txt", ["import", "cron", "--help"]],
   ];
 
   for (const [snapshotName, args] of cases) {

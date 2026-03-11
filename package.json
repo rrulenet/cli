@@ -23,6 +23,9 @@
       "config": {
         "description": "Manage rrulenet CLI configuration"
       },
+      "import": {
+        "description": "Import schedules from other formats"
+      },
       "local": {
         "description": "Manage local recurring schedules"
       }

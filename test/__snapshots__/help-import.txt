@@ -1,0 +1,7 @@
+Import schedules from other formats
+
+USAGE
+  $ rrulenet import COMMAND
+
+COMMANDS
+  import cron  Convert a cron expression to RRule
