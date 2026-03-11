@@ -109,6 +109,17 @@ test("local run executes due schedules once and advances persisted state", () =>
   rmSync(dataDir, { recursive: true, force: true });
 });
 
+test("local run relays command stdout in human mode", () => {
+  const dataDir = makeTempDir();
+  createDueSchedule(dataDir, 'printf "One more minute...\\n"');
+
+  const result = runCli(["local", "run", "--once"], { dataDir });
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /One more minute\.\.\./);
+
+  rmSync(dataDir, { recursive: true, force: true });
+});
+
 test("local run refuses to start when the runner lock is already held", () => {
   const dataDir = makeTempDir();
   process.env.RRULENET_DATA_DIR = dataDir;

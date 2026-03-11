@@ -103,7 +103,7 @@ export function outputList(rows: OutputRow[], jsonMode: boolean): void {
       row.timezone,
       row.rrule,
       row.target || "-",
-      row.next_occurrence || "none",
+      formatNextOccurrence(row.next_occurrence, row.status),
     ]);
   }
 
@@ -149,4 +149,10 @@ function colorStatus(status: string): string {
   if (status === "paused") return pc.yellow(status);
   if (status === "failed") return pc.red(status);
   return status;
+}
+
+function formatNextOccurrence(nextOccurrence: string | null, status: string): string {
+  if (!nextOccurrence) return "none";
+  if (status === "paused") return nextOccurrence;
+  return nextOccurrence <= new Date().toISOString() ? `due since ${nextOccurrence}` : nextOccurrence;
 }

@@ -97,6 +97,7 @@ export default class LocalRun extends BaseCommand<typeof LocalRun> {
             timeoutMs: flags["timeout-ms"],
             maxRetries: flags["max-retries"],
             backoffMs: flags["backoff-ms"],
+            jsonMode: this.jsonMode,
           });
 
           if (flags.once) break;
@@ -132,6 +133,7 @@ async function runCycle(
     timeoutMs: number;
     maxRetries: number;
     backoffMs: number;
+    jsonMode: boolean;
   },
 ): Promise<void> {
   summary.recovered += local.recoverInterruptedRuns(db, new Date().toISOString());
@@ -143,14 +145,16 @@ async function runCycle(
     local.markLocalScheduleRunning(db, schedule.id, startedAt);
 
     try {
-      await execAsync(schedule.command, {
+      const result = await execAsync(schedule.command, {
         timeout: options.timeoutMs,
         shell: process.env.SHELL || "/bin/sh",
       });
+      relayCommandOutput(result.stdout, result.stderr, options.jsonMode);
       local.completeLocalScheduleRun(db, schedule, new Date().toISOString());
       summary.executed += 1;
       summary.succeeded += 1;
     } catch (error) {
+      relayCommandOutput(getCapturedStdout(error), getCapturedStderr(error), options.jsonMode);
       const message = getExecutionErrorMessage(error, options.timeoutMs);
       const retry = local.failLocalScheduleRun(
         db,
@@ -186,6 +190,24 @@ function getExecutionErrorMessage(error: unknown, timeoutMs: number): string {
   }
 
   return String(error);
+}
+
+function relayCommandOutput(stdout: string | undefined, stderr: string | undefined, jsonMode: boolean): void {
+  if (jsonMode) return;
+  if (stdout) process.stdout.write(stdout);
+  if (stderr) process.stderr.write(stderr);
+}
+
+function getCapturedStdout(error: unknown): string | undefined {
+  if (!error || typeof error !== "object") return undefined;
+  const candidate = error as { stdout?: string };
+  return typeof candidate.stdout === "string" ? candidate.stdout : undefined;
+}
+
+function getCapturedStderr(error: unknown): string | undefined {
+  if (!error || typeof error !== "object") return undefined;
+  const candidate = error as { stderr?: string };
+  return typeof candidate.stderr === "string" ? candidate.stderr : undefined;
 }
 
 function sleep(ms: number): Promise<void> {
