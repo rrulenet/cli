@@ -57,6 +57,92 @@ Override with:
 RRULENET_DATA_DIR=/path/to/data rrulenet local list
 ```
 
+## Run as a background service
+
+`rrulenet local run` can be managed by a user-level service manager. The CLI does
+not install services automatically, but it can generate a template for:
+
+- `launchd` on macOS
+- `systemd --user` on Linux
+
+The generated service writes logs in `RRULENET_DATA_DIR`:
+
+- `rrulenet-runner.out.log`
+- `rrulenet-runner.err.log`
+
+### macOS (`launchd`)
+
+Generate a plist:
+
+```bash
+rrulenet local service print --target launchd > ~/Library/LaunchAgents/net.rrule.local-runner.plist
+```
+
+Load and start it:
+
+```bash
+launchctl unload ~/Library/LaunchAgents/net.rrule.local-runner.plist 2>/dev/null
+launchctl load ~/Library/LaunchAgents/net.rrule.local-runner.plist
+launchctl start net.rrule.local-runner
+```
+
+Stop it:
+
+```bash
+launchctl stop net.rrule.local-runner
+launchctl unload ~/Library/LaunchAgents/net.rrule.local-runner.plist
+```
+
+Check logs:
+
+```bash
+tail -f ./.rrulenet/rrulenet-runner.out.log
+tail -f ./.rrulenet/rrulenet-runner.err.log
+```
+
+If you use a custom data directory, generate the template with:
+
+```bash
+rrulenet local service print --target launchd --data-dir /path/to/data
+```
+
+### Linux (`systemd --user`)
+
+Generate a unit:
+
+```bash
+mkdir -p ~/.config/systemd/user
+rrulenet local service print --target systemd-user > ~/.config/systemd/user/rrulenet-local-runner.service
+```
+
+Reload and start it:
+
+```bash
+systemctl --user daemon-reload
+systemctl --user enable --now rrulenet-local-runner
+```
+
+Stop it:
+
+```bash
+systemctl --user disable --now rrulenet-local-runner
+```
+
+Check status and logs:
+
+```bash
+systemctl --user status rrulenet-local-runner
+journalctl --user -u rrulenet-local-runner -f
+tail -f ./.rrulenet/rrulenet-runner.out.log
+tail -f ./.rrulenet/rrulenet-runner.err.log
+```
+
+To change the polling interval or binary path:
+
+```bash
+rrulenet local service print --target systemd-user --interval-ms 10000 --bin /absolute/path/to/rrulenet
+```
+
 ## Cloud setup
 
 ```bash
