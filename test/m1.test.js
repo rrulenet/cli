@@ -80,6 +80,7 @@ function initializeLocalDb(dataDir, rows) {
 
 function normalizeHelp(output) {
   return output
+    .replace(/\u001B\[[0-9;]*m/g, "")
     .replace(/^  @rrulenet\/cli\/.*$/m, "  <VERSION>")
     .trimEnd();
 }
@@ -123,6 +124,7 @@ test("help output snapshots stay stable", async () => {
     ["help-list.txt", ["list", "--help"]],
     ["help-simulate.txt", ["simulate", "--help"]],
     ["help-local-add.txt", ["local", "add", "--help"]],
+    ["help-local-service-print.txt", ["local", "service", "print", "--help"]],
     ["help-cloud-add.txt", ["cloud", "add", "--help"]],
     ["help-import-cron.txt", ["import", "cron", "--help"]],
   ];

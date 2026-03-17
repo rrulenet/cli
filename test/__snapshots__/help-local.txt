@@ -3,6 +3,9 @@ Manage local recurring schedules
 USAGE
   $ rrulenet local COMMAND
 
+TOPICS
+  local service  Print a background service template for the local runner
+
 COMMANDS
   local add     Add a local schedule
   local list    List local schedules

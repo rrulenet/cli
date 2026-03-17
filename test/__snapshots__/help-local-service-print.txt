@@ -1,0 +1,23 @@
+Print a background service template for the local runner
+
+USAGE
+  $ rrulenet local service print --target launchd|systemd-user [--json]
+    [--interval-ms <value>] [--label <value>] [--data-dir <value>] [--bin
+    <value>]
+
+FLAGS
+  --bin=<value>          Override rrulenet binary path in the generated template
+  --data-dir=<value>     Override RRULENET_DATA_DIR in the generated template
+  --interval-ms=<value>  [default: 5000] Polling interval for the generated
+                         runner service
+  --label=<value>        Service label/unit name override
+  --target=<option>      (required) Service manager target
+                         <options: launchd|systemd-user>
+
+GLOBAL FLAGS
+  --json  Format output as json.
+
+EXAMPLES
+  $ rrulenet local service print --target launchd
+
+  $ rrulenet local service print --target systemd-user --interval-ms 5000
