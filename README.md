@@ -8,9 +8,48 @@ Hybrid CLI for:
 
 - Node.js 24+
 
+## Installation
+
+Normal user installation, once the package is published:
+
+```bash
+npm install -g @rrulenet/cli
+rrulenet --help
+```
+
+Until the package is published, you can install it globally from a local checkout:
+
+```bash
+git clone <repo_url>
+cd cli
+npm install
+npm run build
+npm install -g .
+rrulenet --help
+```
+
+## Quick start
+
+After installation:
+
+```bash
+rrulenet --help
+rrulenet local add "FREQ=DAILY;BYHOUR=9;BYMINUTE=0;BYSECOND=0" -- echo "sync"
+rrulenet local list
+rrulenet list
+```
+
+Local data is stored in `./.rrulenet` relative to your current working directory.
+Override with:
+
+```bash
+RRULENET_DATA_DIR=/path/to/data rrulenet local list
+```
+
 ## Dev
 
-From the repository root:
+For development, `npm link` exposes the global `rrulenet` binary from your local
+checkout without a separate global install:
 
 ```bash
 cd cli
@@ -19,8 +58,6 @@ npm run build
 npm link
 rrulenet --help
 ```
-
-`npm link` exposes the global `rrulenet` binary from your local checkout.
 
 ## SQLite runtime note
 
@@ -38,24 +75,6 @@ NODE_OPTIONS=--disable-warning=ExperimentalWarning rrulenet local list
 
 This suppresses `ExperimentalWarning` messages for the Node process. We do not
 recommend using broader flags such as `--no-warnings`.
-
-## Run locally
-
-After `npm link`, use the global binary:
-
-```bash
-rrulenet --help
-rrulenet local add "FREQ=DAILY;BYHOUR=9;BYMINUTE=0;BYSECOND=0" -- echo "sync"
-rrulenet local list
-rrulenet list
-```
-
-Local data is stored in `./.rrulenet` relative to your current working directory.
-Override with:
-
-```bash
-RRULENET_DATA_DIR=/path/to/data rrulenet local list
-```
 
 ## Run as a background service
 
