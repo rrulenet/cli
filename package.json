@@ -42,17 +42,17 @@
     "cloud:list": "npm run build && node ./bin/run.js cloud list"
   },
   "dependencies": {
-    "@oclif/core": "^4.8.0",
+    "@oclif/core": "^4.9.0",
     "@js-temporal/polyfill": "^0.5.1",
     "cli-table3": "^0.6.5",
     "picocolors": "^1.1.1",
-    "rrule-temporal": "^1.4.7",
+    "rrule-temporal": "^1.5.1",
     "yocto-spinner": "^1.1.0"
   },
   "devDependencies": {
-    "@types/node": "^24.0.0",
+    "@types/node": "^25.5.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.3"
   },
   "engines": {
     "node": ">=24.0.0"
