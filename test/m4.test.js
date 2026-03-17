@@ -119,6 +119,33 @@ test("cloud pause maps 401 auth failures to exit code 3 and keeps stdout clean i
   rmSync(result.dataDir, { recursive: true, force: true });
 });
 
+test("cloud pause accepts a unique short id prefix", () => {
+  const result = withMockedFetch(
+    {
+      "POST /v1/schedules/abcd1234/pause": {
+        status: 200,
+        body: {
+          id: "abcd1234efgh5678",
+          status: "paused",
+          timezone: "UTC",
+          rrule: "FREQ=DAILY",
+        },
+      },
+    },
+    ["cloud", "pause", "abcd1234", "--json"],
+    {
+      env: {
+        RRULENET_API_BASE_URL: "https://api.example.test",
+        RRULENET_TOKEN: "test-token",
+      },
+    },
+  );
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(JSON.parse(result.stdout).id, "abcd1234efgh5678");
+  rmSync(result.dataDir, { recursive: true, force: true });
+});
+
 test("cloud resume maps 403 auth failures to exit code 3 and keeps stdout clean in json mode", () => {
   const result = withMockedFetch(
     {
@@ -142,6 +169,32 @@ test("cloud resume maps 403 auth failures to exit code 3 and keeps stdout clean 
   rmSync(result.dataDir, { recursive: true, force: true });
 });
 
+test("cloud resume maps ambiguous short ids to exit code 2", () => {
+  const result = withMockedFetch(
+    {
+      "POST /v1/schedules/abcd/resume": {
+        status: 409,
+        body: {
+          error: "ambiguous_schedule_id",
+          message: "Schedule id prefix matches multiple schedules. Use a longer prefix.",
+        },
+      },
+    },
+    ["cloud", "resume", "abcd", "--json"],
+    {
+      env: {
+        RRULENET_API_BASE_URL: "https://api.example.test",
+        RRULENET_TOKEN: "test-token",
+      },
+    },
+  );
+
+  assert.equal(result.status, 2);
+  assert.equal(result.stdout, "");
+  assert.match(result.stderr, /Cloud resume failed \(409\)/);
+  rmSync(result.dataDir, { recursive: true, force: true });
+});
+
 test("cloud remove maps 401 auth failures to exit code 3 and keeps stdout clean in json mode", () => {
   const result = withMockedFetch(
     {
@@ -162,6 +215,32 @@ test("cloud remove maps 401 auth failures to exit code 3 and keeps stdout clean 
   assert.equal(result.status, 3);
   assert.equal(result.stdout, "");
   assert.match(result.stderr, /Cloud remove failed \(401\)/);
+  rmSync(result.dataDir, { recursive: true, force: true });
+});
+
+test("cloud remove maps missing short ids to exit code 2", () => {
+  const result = withMockedFetch(
+    {
+      "DELETE /v1/schedules/missing": {
+        status: 404,
+        body: {
+          error: "schedule_not_found",
+          message: "Schedule not found.",
+        },
+      },
+    },
+    ["cloud", "remove", "missing", "--json"],
+    {
+      env: {
+        RRULENET_API_BASE_URL: "https://api.example.test",
+        RRULENET_TOKEN: "test-token",
+      },
+    },
+  );
+
+  assert.equal(result.status, 2);
+  assert.equal(result.stdout, "");
+  assert.match(result.stderr, /Cloud remove failed \(404\)/);
   rmSync(result.dataDir, { recursive: true, force: true });
 });
 
