@@ -56,7 +56,7 @@ export async function cloudAddSchedule(
 
   if (!res.ok) {
     const body = await safeJson(res);
-    const exitCode = res.status === 401 || res.status === 403 ? 3 : 4;
+    const exitCode = mapCloudStatusToExitCode(res.status);
     throw new CliError(`Cloud add failed (${res.status}): ${JSON.stringify(body)}`, exitCode);
   }
 
@@ -83,7 +83,7 @@ export async function cloudListSchedules(cloud: ResolvedCloudConfig): Promise<Cl
 
   if (!res.ok) {
     const body = await safeJson(res);
-    const exitCode = res.status === 401 || res.status === 403 ? 3 : 4;
+    const exitCode = mapCloudStatusToExitCode(res.status);
     throw new CliError(`Cloud list failed (${res.status}): ${JSON.stringify(body)}`, exitCode);
   }
 
@@ -117,7 +117,7 @@ export async function cloudRemoveSchedule(cloud: ResolvedCloudConfig, id: string
 
   if (!res.ok) {
     const body = await safeJson(res);
-    const exitCode = res.status === 401 || res.status === 403 ? 3 : 4;
+    const exitCode = mapCloudStatusToExitCode(res.status);
     throw new CliError(`Cloud remove failed (${res.status}): ${JSON.stringify(body)}`, exitCode);
   }
 
@@ -146,7 +146,7 @@ async function cloudScheduleAction(
 
   if (!res.ok) {
     const body = await safeJson(res);
-    const exitCode = res.status === 401 || res.status === 403 ? 3 : 4;
+    const exitCode = mapCloudStatusToExitCode(res.status);
     throw new CliError(`${errorPrefix} (${res.status}): ${JSON.stringify(body)}`, exitCode);
   }
 
@@ -167,4 +167,10 @@ async function safeJson(res: Response): Promise<unknown> {
 
 function isObject(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
+}
+
+function mapCloudStatusToExitCode(status: number): number {
+  if (status === 401 || status === 403) return 3;
+  if (status === 400 || status === 404 || status === 409 || status === 422) return 2;
+  return 4;
 }
