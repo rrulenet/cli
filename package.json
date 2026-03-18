@@ -1,9 +1,33 @@
 {
   "name": "@rrulenet/cli",
   "version": "0.1.0",
+  "description": "Hybrid CLI for local recurring jobs and rrule.net cloud schedules.",
+  "license": "MIT",
   "private": true,
   "type": "module",
+  "homepage": "https://github.com/rrulenet/cli#readme",
+  "bugs": {
+    "url": "https://github.com/rrulenet/cli/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rrulenet/cli.git"
+  },
+  "keywords": [
+    "rrule",
+    "recurrence",
+    "scheduler",
+    "schedule",
+    "cli",
+    "cron",
+    "temporal",
+    "automation"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "files": [
+    "LICENSE",
     "README.md",
     "bin",
     "dist"

@@ -1,8 +1,31 @@
 # rrulenet CLI
 
-Hybrid CLI for:
-- local recurring jobs (cron-like, RRule-based)
-- cloud schedules on rrule.net
+Recurrence is harder than it looks.
+
+Build reliable recurring schedules locally, then scale the same model to production with rrule.net.
+
+https://rrule.net
+
+---
+
+## Why this exists
+
+Recurring schedules seem simple until real-world constraints appear:
+
+- timezones and DST
+- long-running schedules
+- end-of-month and leap-year edge cases
+- reliability over time
+
+`rrulenet` gives you a deterministic RRULE-based model for both local execution and cloud-managed schedules.
+
+## What this CLI does
+
+Use `rrulenet` to:
+
+- run local recurring jobs from the command line
+- run a persistent local scheduler on your machine
+- manage cloud schedules on `rrule.net`
 
 ## Requirements
 
@@ -17,7 +40,7 @@ npm install -g @rrulenet/cli
 rrulenet --help
 ```
 
-Until the package is published, you can install it globally from a local checkout:
+Until the package is published, install it globally from a local checkout:
 
 ```bash
 git clone <repo_url>
@@ -29,8 +52,6 @@ rrulenet --help
 ```
 
 ## Quick start
-
-After installation:
 
 ```bash
 rrulenet --help
@@ -46,35 +67,29 @@ Override with:
 RRULENET_DATA_DIR=/path/to/data rrulenet local list
 ```
 
-## Dev
-
-For development, `npm link` exposes the global `rrulenet` binary from your local
-checkout without a separate global install:
+## Cloud setup
 
 ```bash
-cd cli
-npm install
-npm run build
-npm link
-rrulenet --help
+rrulenet config set cloud.api_url https://api.rrule.net
+rrulenet config set cloud.token <your_api_key_or_token>
+RRULENET_TOKEN=<your_api_key_or_token> rrulenet cloud list
 ```
 
-## SQLite runtime note
+## Local and cloud
 
-The local scheduler uses Node's native `node:sqlite` module.
+The CLI supports both local execution and cloud schedule management.
 
-On current Node 24+ releases, `node:sqlite` does not require the old
-`--experimental-sqlite` flag anymore. Node may still print an
-`ExperimentalWarning` when the module is loaded.
+| Capability | Local CLI | rrule.net cloud |
+| --- | --- | --- |
+| RRULE scheduling | ✅ | ✅ |
+| Local command execution | ✅ | ❌ |
+| Persistent background runner | ✅ | ✅ managed |
+| Cloud-managed schedules | ❌ | ✅ |
+| API-backed schedule operations | via `cloud` commands | ✅ |
 
-If you want to hide that warning when running the CLI, use:
+Use the CLI to build, test, and run schedules locally.
 
-```bash
-NODE_OPTIONS=--disable-warning=ExperimentalWarning rrulenet local list
-```
-
-This suppresses `ExperimentalWarning` messages for the Node process. We do not
-recommend using broader flags such as `--no-warnings`.
+Use `rrule.net` when you want managed cloud execution and API-backed schedule operations.
 
 ## Run as a background service
 
@@ -162,10 +177,39 @@ To change the polling interval or binary path:
 rrulenet local service print --target systemd-user --interval-ms 10000 --bin /absolute/path/to/rrulenet
 ```
 
-## Cloud setup
+## Dev
+
+For development, `npm link` exposes the global `rrulenet` binary from your local
+checkout without a separate global install:
 
 ```bash
-rrulenet config set cloud.api_url https://api.rrule.net
-rrulenet config set cloud.token <your_api_key_or_token>
-RRULENET_TOKEN=<your_api_key_or_token> rrulenet cloud list
+cd cli
+npm install
+npm run build
+npm link
+rrulenet --help
 ```
+
+## Notes
+
+The local scheduler uses Node's native `node:sqlite` module.
+
+On current Node 24+ releases, `node:sqlite` does not require the old
+`--experimental-sqlite` flag anymore. Node may still print an
+`ExperimentalWarning` when the module is loaded.
+
+If you want to hide that warning when running the CLI, use:
+
+```bash
+NODE_OPTIONS=--disable-warning=ExperimentalWarning rrulenet local list
+```
+
+This suppresses `ExperimentalWarning` messages for the Node process. We do not
+recommend using broader flags such as `--no-warnings`.
+
+## License
+
+MIT
+
+This license applies to the CLI source code in this repository only. Hosted
+`rrule.net` services and APIs are governed separately.

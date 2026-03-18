@@ -1,3 +1,5 @@
+Hybrid CLI for local recurring jobs and rrule.net cloud schedules.
+
 VERSION
   <VERSION>
 
