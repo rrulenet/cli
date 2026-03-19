@@ -32,7 +32,7 @@
     "dist"
   ],
   "bin": {
-    "rrulenet": "./bin/run.js"
+    "rrulenet": "bin/run.js"
   },
   "oclif": {
     "bin": "rrulenet",
