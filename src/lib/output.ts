@@ -68,6 +68,7 @@ export function output(payload: unknown, jsonMode: boolean): void {
 
   if (typeof payload === "object" && payload !== null) {
     for (const [key, value] of Object.entries(payload)) {
+      if (value === undefined) continue;
       const rendered = typeof value === "object" && value !== null ? JSON.stringify(value) : String(value);
       console.log(`${pc.cyan(key)}: ${rendered}`);
     }
