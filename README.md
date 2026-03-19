@@ -33,21 +33,8 @@ Use `rrulenet` to:
 
 ## Installation
 
-Normal user installation, once the package is published:
-
 ```bash
 npm install -g @rrulenet/cli
-rrulenet --help
-```
-
-Until the package is published, install it globally from a local checkout:
-
-```bash
-git clone <repo_url>
-cd cli
-npm install
-npm run build
-npm install -g .
 rrulenet --help
 ```
 

@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "description": "Hybrid CLI for local recurring jobs and rrule.net cloud schedules.",
   "license": "MIT",
-  "private": true,
   "type": "module",
   "homepage": "https://github.com/rrulenet/cli#readme",
   "bugs": {
