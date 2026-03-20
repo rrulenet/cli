@@ -1,5 +1,7 @@
 # rrulenet CLI
 
+[![npm version](https://img.shields.io/npm/v/%40rrulenet%2Fcli)](https://www.npmjs.com/package/@rrulenet/cli)
+
 Recurrence is harder than it looks.
 
 Build reliable recurring schedules locally, then scale the same model to production with rrule.net.
