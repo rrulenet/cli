@@ -65,15 +65,15 @@
     "cloud:list": "npm run build && node ./bin/run.js cloud list"
   },
   "dependencies": {
-    "@oclif/core": "^4.9.0",
+    "@oclif/core": "^4.10.5",
     "@js-temporal/polyfill": "^0.5.1",
     "cli-table3": "^0.6.5",
     "picocolors": "^1.1.1",
-    "rrule-temporal": "^1.5.1",
+    "rrule-temporal": "^1.5.2",
     "yocto-spinner": "^1.1.0"
   },
   "devDependencies": {
-    "@types/node": "^25.5.0",
+    "@types/node": "^25.6.0",
     "typescript": "^5.9.3"
   },
   "engines": {
