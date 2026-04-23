@@ -1,4 +1,4 @@
-Hybrid CLI for local recurring jobs and rrule.net cloud schedules.
+Command-line workflows for recurring jobs, local schedulers, and rrule.net cloud schedules.
 
 VERSION
   <VERSION>

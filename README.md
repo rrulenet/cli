@@ -1,14 +1,41 @@
-# rrulenet CLI
+<p align="center">
+  <a href="https://rrule.net">
+    <img src="./assets/avatar.svg" alt="rrule.net" width="96" height="96">
+  </a>
+</p>
 
-[![npm version](https://img.shields.io/npm/v/%40rrulenet%2Fcli)](https://www.npmjs.com/package/@rrulenet/cli)
+<h1 align="center">@rrulenet/cli</h1>
 
-Recurrence is harder than it looks.
+<p align="center">
+  Command-line workflows for recurring jobs, local schedulers, and rrule.net cloud schedules.
+</p>
 
-Build reliable recurring schedules locally, then scale the same model to production with rrule.net.
+<p align="center">
+  <a href="https://rrule.net">rrule.net</a> •
+  <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Temporal">Temporal API</a> •
+  <strong>@rrulenet ecosystem</strong>
+</p>
 
-https://rrule.net
+<p align="center">
+  <code>@rrulenet/rrule</code> ·
+  <code>@rrulenet/recurrence</code> ·
+  <code>@rrulenet/core</code> ·
+  <code>@rrulenet/cli</code>
+</p>
 
----
+<p align="center">
+  <a href="https://www.npmjs.com/package/@rrulenet/cli"><img src="https://img.shields.io/npm/v/%40rrulenet%2Fcli" alt="npm version"></a>
+  <a href="https://rrulenet.github.io/cli/coverage.json"><img src="https://img.shields.io/endpoint?url=https://rrulenet.github.io/cli/coverage.json" alt="Coverage"></a>
+  <img src="https://img.shields.io/badge/license-MIT-2563EB" alt="MIT License">
+</p>
+
+<p align="center">
+  <sub><strong>@rrulenet/rrule</strong>: classic API · <strong>@rrulenet/recurrence</strong>: Temporal-first API · <strong>@rrulenet/core</strong>: engine · <strong>@rrulenet/cli</strong>: workflows</sub>
+</p>
+
+`@rrulenet/cli` provides the command-line interface in the ecosystem. It is designed for teams that want to run recurring jobs locally, operate a persistent local scheduler, and work with rrule.net cloud schedules from the same tool.
+
+Use `@rrulenet/cli` when you want operational workflows around schedules. Use `@rrulenet/rrule` or `@rrulenet/recurrence` when you want to embed recurrence logic directly in application code.
 
 ## Why this exists
 

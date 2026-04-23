@@ -1,5 +1,5 @@
-import { Temporal } from "@js-temporal/polyfill";
-import { RRuleTemporal } from "rrule-temporal";
+import { Temporal } from "temporal-polyfill";
+import { parse as parseRecurrence } from "@rrulenet/recurrence";
 
 export function parseISOToZonedDateTime(
   isoString: string,
@@ -29,29 +29,25 @@ export function normalizeDateInput(input: string, timezone: string): string {
   return parseISOToZonedDateTime(input, timezone).toInstant().toString();
 }
 
+function createRule(rruleString: string, dtstartIso: string, timezone: string) {
+  const dtstart = parseISOToZonedDateTime(dtstartIso, timezone);
+  return parseRecurrence({
+    rruleString,
+    start: dtstart.toInstant(),
+    tzid: timezone,
+    cache: true,
+  });
+}
+
 export function computeNextOccurrence(
   rruleString: string,
   dtstartIso: string,
   timezone: string,
   afterDate: Date,
 ): string | null {
-  const dtstart = parseISOToZonedDateTime(dtstartIso, timezone);
-  const rule = new RRuleTemporal({ rruleString, dtstart });
-  const afterZdt = Temporal.Instant.fromEpochMilliseconds(afterDate.getTime()).toZonedDateTimeISO(
-    timezone,
-  );
-
-  let windowSeconds = 3600;
-  const maxWindowSeconds = 20 * 365 * 24 * 3600;
-  while (windowSeconds <= maxWindowSeconds) {
-    const beforeZdt = afterZdt.add({ seconds: windowSeconds });
-    const batch = rule.between(afterZdt, beforeZdt, false);
-    if (batch.length > 0) {
-      return new Date(batch[0].epochMilliseconds).toISOString();
-    }
-    windowSeconds *= 2;
-  }
-  return null;
+  const rule = createRule(rruleString, dtstartIso, timezone);
+  const next = rule.after(afterDate, false);
+  return next ? toIsoInstant(next) : null;
 }
 
 export function computeOccurrences(
@@ -61,50 +57,39 @@ export function computeOccurrences(
   count: number,
   afterDate?: Date,
 ): string[] {
-  const dtstart = parseISOToZonedDateTime(dtstartIso, timezone);
+  const rule = createRule(rruleString, dtstartIso, timezone);
   const hasFiniteBoundary = /(?:^|;)(COUNT|UNTIL)=/i.test(rruleString);
-  const rule = new RRuleTemporal({ rruleString, dtstart });
   const occurrences: Temporal.ZonedDateTime[] = [];
 
   if (afterDate) {
-    const afterZdt = Temporal.Instant.fromEpochMilliseconds(afterDate.getTime()).toZonedDateTimeISO(
-      timezone,
-    );
-
-    let cursor = afterZdt;
-    let windowSeconds = 3600;
-    const maxWindowSeconds = 20 * 365 * 24 * 3600;
-
-    while (occurrences.length < count && windowSeconds <= maxWindowSeconds) {
-      const beforeZdt = cursor.add({ seconds: windowSeconds });
-      const batch = rule.between(cursor, beforeZdt, false);
-
-      if (batch.length === 0) {
-        windowSeconds *= 2;
-        continue;
-      }
-
-      const needed = count - occurrences.length;
-      occurrences.push(...batch.slice(0, needed));
-      cursor = batch[batch.length - 1];
-      windowSeconds = 3600;
+    let cursor: Date | Temporal.ZonedDateTime = afterDate;
+    while (occurrences.length < count) {
+      const next = rule.after(cursor, false);
+      if (!next) break;
+      occurrences.push(next);
+      cursor = next;
     }
   } else if (hasFiniteBoundary) {
     occurrences.push(...rule.all().slice(0, count));
   } else {
-    rule.all((zdt) => {
-      occurrences.push(zdt);
+    rule.all((date) => {
+      occurrences.push(date);
       return occurrences.length < count;
     });
   }
 
-  return occurrences
-    .slice(0, count)
-    .map((zdt) => new Date(zdt.epochMilliseconds).toISOString());
+  return occurrences.slice(0, count).map(toIsoInstant);
+}
+
+function toIsoInstant(date: Temporal.ZonedDateTime): string {
+  return new Date(date.epochMilliseconds).toISOString();
 }
 
 export function isValidRRule(rruleString: string, dtstartIso: string, timezone: string): boolean {
   try {
+    if (!/(?:^|;)FREQ=/.test(rruleString.toUpperCase())) {
+      return false;
+    }
     const dtstart = parseISOToZonedDateTime(dtstartIso, timezone);
     const firstProbeDate = new Date(dtstart.epochMilliseconds - 1);
     return computeNextOccurrence(rruleString, dtstartIso, timezone, firstProbeDate) !== null;

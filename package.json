@@ -1,7 +1,7 @@
 {
   "name": "@rrulenet/cli",
-  "version": "0.1.0-beta.2",
-  "description": "Hybrid CLI for local recurring jobs and rrule.net cloud schedules.",
+  "version": "0.1.0",
+  "description": "Command-line workflows for recurring jobs, local schedulers, and rrule.net cloud schedules.",
   "license": "MIT",
   "type": "module",
   "homepage": "https://github.com/rrulenet/cli#readme",
@@ -26,6 +26,7 @@
     "access": "public"
   },
   "files": [
+    "assets",
     "LICENSE",
     "README.md",
     "bin",
@@ -57,6 +58,8 @@
   "scripts": {
     "build": "rm -rf dist && tsc -p tsconfig.json",
     "test": "npm run build && NODE_OPTIONS=--disable-warning=ExperimentalWarning node --test test/**/*.test.js",
+    "coverage": "npm run build && NODE_OPTIONS=--disable-warning=ExperimentalWarning node --experimental-test-coverage --test-coverage-include=dist/**/*.js --test test/**/*.test.js",
+    "coverage:badge": "node scripts/write-coverage-badge.mjs coverage-output.txt badges/coverage.json",
     "typecheck": "tsc --noEmit",
     "prepare": "npm run build",
     "dev": "node ./bin/dev.js",
@@ -66,10 +69,10 @@
   },
   "dependencies": {
     "@oclif/core": "^4.10.5",
-    "@js-temporal/polyfill": "^0.5.1",
+    "@rrulenet/recurrence": "^0.1.0",
     "cli-table3": "^0.6.5",
     "picocolors": "^1.1.1",
-    "rrule-temporal": "^1.5.2",
+    "temporal-polyfill": "^0.3.2",
     "yocto-spinner": "^1.1.0"
   },
   "devDependencies": {
