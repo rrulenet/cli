@@ -1,6 +1,6 @@
 {
   "name": "@rrulenet/cli",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Command-line workflows for recurring jobs, local schedulers, and rrule.net cloud schedules.",
   "license": "MIT",
   "type": "module",
@@ -69,7 +69,7 @@
   },
   "dependencies": {
     "@oclif/core": "^4.11.4",
-    "@rrulenet/recurrence": "^0.1.5",
+    "@rrulenet/recurrence": "^0.1.6",
     "cli-table3": "^0.6.5",
     "picocolors": "^1.1.1",
     "temporal-polyfill": "^0.3.2",
