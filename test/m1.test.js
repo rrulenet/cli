@@ -126,6 +126,9 @@ test("help output snapshots stay stable", async () => {
     ["help-local-add.txt", ["local", "add", "--help"]],
     ["help-local-service-print.txt", ["local", "service", "print", "--help"]],
     ["help-cloud-add.txt", ["cloud", "add", "--help"]],
+    ["help-cloud-list.txt", ["cloud", "list", "--help"]],
+    ["help-cloud-get.txt", ["cloud", "get", "--help"]],
+    ["help-cloud-executions.txt", ["cloud", "executions", "--help"]],
     ["help-import-cron.txt", ["import", "cron", "--help"]],
   ];
 
@@ -163,15 +166,20 @@ test("local list json snapshot stays stable", () => {
 test("cloud list json snapshot stays stable", () => {
   const result = withMockedFetch(
     {
-      "GET /v1/schedules": {
+      "GET /v1/schedules?status=active&limit=25&offset=50": {
         status: 200,
         body: {
           schedules: [
             {
               id: "cloud-1",
+              name: "Business-hours check",
               status: "active",
               timezone: "UTC",
-              rrule: { rule: "FREQ=HOURLY;INTERVAL=6" },
+              input: {
+                type: "natural",
+                value: "every 6 hours on business days",
+                language: "en",
+              },
               webhook: { url: "https://example.com/hook" },
               next_occurrence: "2026-03-09T12:00:00.000Z",
               created_at: "2026-03-01T10:00:00.000Z",
@@ -180,7 +188,7 @@ test("cloud list json snapshot stays stable", () => {
         },
       },
     },
-    ["cloud", "list", "--json"],
+    ["cloud", "list", "--status", "active", "--limit", "25", "--offset", "50", "--json"],
     {
       env: {
         RRULENET_API_BASE_URL: "https://api.example.test",
@@ -217,9 +225,10 @@ test("combined list json snapshot stays stable", () => {
           schedules: [
             {
               id: "cloud-1",
+              name: "Weekly digest",
               status: "paused",
               timezone: "UTC",
-              rrule: "FREQ=WEEKLY;BYDAY=MO",
+              input: { type: "rrule", value: "FREQ=WEEKLY;BYDAY=MO" },
               webhook: { url: "https://example.com/weekly" },
               next_occurrence: "2026-03-16T00:00:00.000Z",
               created_at: "2026-03-02T09:30:00.000Z",

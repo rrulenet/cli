@@ -1,0 +1,23 @@
+List cloud schedules
+
+USAGE
+  $ rrulenet cloud list [--json] [--status active|paused] [--limit
+    <value>] [--offset <value>]
+
+FLAGS
+  --limit=<value>    Maximum schedules to return (1-100)
+  --offset=<value>   Schedules to skip (zero or greater)
+  --status=<option>  Filter by schedule status
+                     <options: active|paused>
+
+GLOBAL FLAGS
+  --json  Format output as json.
+
+EXAMPLES
+  $ rrulenet cloud list
+
+  $ rrulenet cloud list --status active --limit 25
+
+  $ rrulenet cloud list --offset 100 --limit 100
+
+  $ rrulenet cloud list --json

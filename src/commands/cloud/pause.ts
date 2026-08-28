@@ -7,10 +7,10 @@ import { startSpinner } from "../../lib/runtime.js";
 
 export default class CloudPause extends BaseCommand<typeof CloudPause> {
   static override summary = "Pause a cloud schedule";
-  static override examples = ["<%= config.bin %> cloud pause sch_123"];
+  static override examples = ["<%= config.bin %> cloud pause abcd1234"];
 
   static override args = {
-    id: Args.string({ required: true, description: "Cloud schedule id" }),
+    id: Args.string({ required: true, description: "Cloud schedule id or unique prefix" }),
   };
 
   async run(): Promise<void> {

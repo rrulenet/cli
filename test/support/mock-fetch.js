@@ -3,10 +3,12 @@ const routes = JSON.parse(process.env.RRULENET_TEST_FETCH_ROUTES || "{}");
 globalThis.fetch = async (input, init = {}) => {
   const method = (init.method || "GET").toUpperCase();
   const url = typeof input === "string" ? new URL(input) : new URL(input.url);
-  const route = routes[`${method} ${url.pathname}`];
+  const route =
+    routes[`${method} ${url.pathname}${url.search}`] ??
+    routes[`${method} ${url.pathname}`];
 
   if (!route) {
-    throw new Error(`Unhandled fetch route: ${method} ${url.pathname}`);
+    throw new Error(`Unhandled fetch route: ${method} ${url.pathname}${url.search}`);
   }
 
   if (route.throw) {

@@ -9,11 +9,12 @@ export default class CloudAdd extends BaseCommand<typeof CloudAdd> {
   static override summary = "Create a cloud schedule";
   static override examples = [
     '<%= config.bin %> cloud add "FREQ=DAILY;BYHOUR=9;BYMINUTE=0;BYSECOND=0" --webhook https://example.com/hook',
+    '<%= config.bin %> cloud add "every weekday at 09:00" --timezone Europe/Paris --webhook https://example.com/hook',
     '<%= config.bin %> cloud add "FREQ=WEEKLY;BYDAY=MO,FR;BYHOUR=18;BYMINUTE=30;BYSECOND=0" --timezone Europe/Paris --webhook https://example.com/deploy',
   ];
 
   static override args = {
-    rrule: Args.string({required: true, description: "RRule expression"}),
+    input: Args.string({required: true, description: "Schedule input (RRule, cron, or natural language)"}),
   };
 
   static override flags = {
@@ -28,7 +29,7 @@ export default class CloudAdd extends BaseCommand<typeof CloudAdd> {
 
     try {
       const schedule = await cloudAddSchedule(resolveCloudConfig(config), {
-        rrule: args.rrule,
+        input: args.input,
         timezone: flags.timezone,
         webhook: flags.webhook,
       });

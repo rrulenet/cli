@@ -1,0 +1,15 @@
+Show a cloud schedule
+
+USAGE
+  $ rrulenet cloud get ID [--json]
+
+ARGUMENTS
+  ID  Cloud schedule id or unique prefix
+
+GLOBAL FLAGS
+  --json  Format output as json.
+
+EXAMPLES
+  $ rrulenet cloud get abcd1234
+
+  $ rrulenet cloud get abcd1234 --json

@@ -54,7 +54,8 @@ Use `rrulenet` to:
 
 - run local recurring jobs from the command line
 - run a persistent local scheduler on your machine
-- manage cloud schedules on `rrule.net`
+- create and manage cloud schedules on `rrule.net`
+- inspect cloud schedule details and recent execution history
 
 ## Requirements
 
@@ -91,13 +92,35 @@ rrulenet config set cloud.token <your_api_key_or_token>
 RRULENET_TOKEN=<your_api_key_or_token> rrulenet cloud list
 ```
 
+Cloud schedule input can be an RRULE, a cron expression, or natural language:
+
+```bash
+rrulenet cloud add "every weekday at 09:00" \
+  --timezone Europe/Paris \
+  --webhook https://example.com/hook
+```
+
+Inspect and operate schedules with either a full id or a unique id prefix:
+
+```bash
+rrulenet cloud list --status active --limit 25
+rrulenet cloud get abcd1234
+rrulenet cloud executions abcd1234 --limit 25
+rrulenet cloud pause abcd1234
+rrulenet cloud resume abcd1234
+rrulenet cloud remove abcd1234
+```
+
+Use `--offset` with `cloud list` and `cloud executions` for pagination. Add
+`--json` to any cloud command for machine-readable output.
+
 ## Local and cloud
 
 The CLI supports both local execution and cloud schedule management.
 
 | Capability | Local CLI | rrule.net cloud |
 | --- | --- | --- |
-| RRULE scheduling | ✅ | ✅ |
+| RRULE, cron, and natural-language input | RRULE locally | ✅ |
 | Local command execution | ✅ | ❌ |
 | Persistent background runner | ✅ | ✅ managed |
 | Cloud-managed schedules | ❌ | ✅ |

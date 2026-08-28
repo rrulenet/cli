@@ -146,6 +146,95 @@ test("cloud pause accepts a unique short id prefix", () => {
   rmSync(result.dataDir, { recursive: true, force: true });
 });
 
+test("cloud get accepts a unique short id prefix and returns the current API contract", () => {
+  const schedule = {
+    id: "abcd1234-0000-4000-8000-000000000000",
+    name: "Morning sync",
+    status: "active",
+    pause_context: null,
+    timezone: "Europe/Paris",
+    input: { type: "natural", value: "every weekday at 09:00", language: "en" },
+    recurrence: { frequency: "weekly", by_week_day: ["monday", "tuesday", "wednesday", "thursday", "friday"] },
+    targets: [],
+    explanation: { text: "Every weekday at 09:00", confidence: 1, ambiguities: [] },
+    webhook: { url: "https://example.com/hook" },
+    last_occurrence: null,
+    next_occurrence: "2026-08-31T07:00:00.000Z",
+    recent_executions: [],
+    created_at: "2026-08-28T08:00:00.000Z",
+    updated_at: "2026-08-28T08:00:00.000Z",
+  };
+  const result = withMockedFetch(
+    {
+      "GET /v1/schedules/abcd1234": { status: 200, body: schedule },
+    },
+    ["cloud", "get", "abcd1234", "--json"],
+    {
+      env: {
+        RRULENET_API_BASE_URL: "https://api.example.test",
+        RRULENET_TOKEN: "test-token",
+      },
+    },
+  );
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.deepEqual(JSON.parse(result.stdout), schedule);
+  rmSync(result.dataDir, { recursive: true, force: true });
+});
+
+test("cloud executions supports short ids and pagination", () => {
+  const payload = {
+    executions: [
+      {
+        execution_id: "exec-1",
+        schedule_id: "abcd1234-0000-4000-8000-000000000000",
+        scheduled_for: "2026-08-28T09:00:00.000Z",
+        executed_at: "2026-08-28T09:00:01.000Z",
+        status: "success",
+        response_code: 204,
+        response_body: null,
+        target: {
+          id: "primary",
+          label: "Primary webhook",
+          timezone: "Europe/Paris",
+          metadata: {},
+        },
+      },
+    ],
+    count: 1,
+  };
+  const result = withMockedFetch(
+    {
+      "GET /v1/schedules/abcd1234/executions?limit=25&offset=25": {
+        status: 200,
+        body: payload,
+      },
+    },
+    ["cloud", "executions", "abcd1234", "--limit", "25", "--offset", "25", "--json"],
+    {
+      env: {
+        RRULENET_API_BASE_URL: "https://api.example.test",
+        RRULENET_TOKEN: "test-token",
+      },
+    },
+  );
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.deepEqual(JSON.parse(result.stdout), payload);
+  rmSync(result.dataDir, { recursive: true, force: true });
+});
+
+test("cloud pagination rejects limits outside the API contract", () => {
+  const result = runCli(["cloud", "list", "--limit", "101", "--json"], {
+    env: { RRULENET_TOKEN: "test-token" },
+  });
+
+  assert.equal(result.status, 2);
+  assert.equal(result.stdout, "");
+  assert.match(result.stderr, /--limit must be between 1 and 100/);
+  rmSync(result.dataDir, { recursive: true, force: true });
+});
+
 test("cloud resume maps 403 auth failures to exit code 3 and keeps stdout clean in json mode", () => {
   const result = withMockedFetch(
     {
